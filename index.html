@@ -1,0 +1,117 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>🔒 Lernfabrik</title>
+<style>
+  :root{ --page:#0B0E13; --card:#11151C; --line:#1E2530; --muted:#8B95A6; --teal:#5EEAD4; }
+  *{box-sizing:border-box}
+  body{
+    margin:0; min-height:100vh; background:var(--page); color:#E7ECF3;
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",sans-serif;
+    display:flex; align-items:center; justify-content:center; padding:26px 18px;
+    background-image:radial-gradient(1100px 470px at 50% -8%, #16202E 0%, #0B0E13 62%);
+  }
+  .box{
+    width:100%; max-width:400px; background:var(--card); border:1px solid var(--line);
+    border-radius:20px; padding:30px 26px 24px; text-align:center;
+  }
+  .logo{font-size:44px}
+  h1{font-size:23px; margin:10px 0 4px; letter-spacing:.3px}
+  h1 .accent{color:var(--teal)}
+  .sub{color:var(--muted); font-size:14px; margin:0 0 20px; line-height:1.5}
+  input[type=password]{
+    width:100%; padding:14px 16px; font-size:17px; border-radius:12px; border:1px solid var(--line);
+    background:#0D1117; color:#E7ECF3; outline:none; margin-bottom:12px;
+  }
+  input[type=password]:focus{border-color:rgba(94,234,212,.55)}
+  .row{display:flex; align-items:center; gap:8px; font-size:13px; color:var(--muted); margin-bottom:16px; text-align:left}
+  .row input{accent-color:#5EEAD4; transform:scale(1.15)}
+  button{
+    width:100%; padding:14px; font-size:16px; font-weight:700; border:0; border-radius:12px;
+    background:linear-gradient(135deg,#2DD4BF,#0E9F8A); color:#06281F; cursor:pointer;
+  }
+  button:active{transform:scale(.985)}
+  .msg{min-height:22px; font-size:13.5px; margin-top:12px; color:var(--muted)}
+  .err{color:#F87171}
+  .ok{color:var(--teal)}
+  @keyframes shake{0%,100%{transform:translateX(0)}20%{transform:translateX(-7px)}40%{transform:translateX(7px)}60%{transform:translateX(-5px)}80%{transform:translateX(5px)}}
+  .shake{animation:shake .38s}
+  footer{margin-top:16px; font-size:11.5px; color:#4A5462}
+</style>
+</head>
+<body>
+  <div class="box" id="box">
+    <div class="logo">🏭</div>
+    <h1>Lern<span class="accent">fabrik</span></h1>
+    <p class="sub">Willkommen! Dieser Bereich ist verschlüsselt.<br>Gib bitte das Passwort ein.</p>
+    <input type="password" id="pw" placeholder="Passwort" autocomplete="current-password" autocapitalize="off" autocorrect="off" spellcheck="false">
+    <label class="row"><input type="checkbox" id="save" checked> Auf diesem Gerät speichern</label>
+    <button id="go">Entschlüsseln 🔓</button>
+    <div class="msg" id="msg"></div>
+    <footer>Geschützt per AES-256 · läuft komplett auf deinem Gerät</footer>
+  </div>
+<script>
+"use strict";
+const __PAY__ = "eyJpIjoidktoK2FQSUpYUUxFSksveSIsImQiOiJ4S043NmxFR1lTdUVNVHdhNitCSE1PMTIwRERpRXFlSEhRdkN6WVpSWTNabXJBVWMxQ2NUTGNycHNUai9vNW9nSTZMNWMzdlRUSlEwVFFRdi9ydGZJcGFTYnpoSjhUSVBEeU5zeUpETlFGNWJlSmU2NDdKMzFnTWRSdllJSlAzQU9XMUk4MmFWeGFqdEtKaWc3WFo1TXRCUmxLcC8wK2tPUVg0R2NrMWtPQjNIdGJDS3g3UUpqd0MzTzYzbFVKUWhQQS9BNWJBMEh1Y2ZMN2hxL29wWU5Hd0ZiYWYwVk5CYVFvazNNWlhxQTFUbk1lZ1g0UDBON3JYZmNpUW1CMDR0clQxR09WQnRzUDZTMUttY0dPTEdlUFBNQnZpd2ZuZGhoOW5Cb2lXSUR6YktXdGxUcHRlLy9hZzN6aFJBZ2VEWXRLNVV2K1JFdG1mZUFjdHJaQ25nUkcxUVZ1c1ZIV1ZaV2RpSXBMc2ZIS0lXL3huMnZEVHI0OUVreTJqS2FaMWhraHY3aitlWTlOdlYvcDZ2RmUwN0Y5dG12bndmUFRZelVsV3F1VlBsa1RVc3lZOVlKMEsvRGJlaEdVQ0JHVjhjVlF2VzBVaGsySHJhUmVTd2FCbXgrNFlxWUQwcUcxSHh2UTMzcGROZVFhUkVzRFBVZUlHZnNJd2hDUFZHMjZTQkJtekdwUzQ5Mm1pQWZJT09xMWZMTnpQUnlud0RWTzdkYXhqS3JIY0dBWldOWGo5dEpkZnQzRG0wRG1VdTRKbldRYjZZcjRYa0tvN0NkTWlnWEJhRDIvOTVxM3g3NVBDQWdxc0F4VHBabXoyMThkOFI2V203dnd1eG00MEZQSDdRaXZSaXRFdEt5NUNMcmpMU1JISExIeWRCMXZHU1BpZHBPZ0UyTUZ4cFpxZkpkTktNc2VlUXAvQlI4OUVCd0pXWStSN1QwdE1hNkovUG4xTFV4aHZGa0FrNWtmVTRUejVIdFY5REtGcXIybk1uZlpiOFJKTGRTNUJEY2JPV3dyVkpsenRpNzgrUnVJRnpDR1BmZXNTZCtHcHdUYkFKNHU5Y3FXOUcwSFJNdUM0c0tsczgwdUtwbHM0eXpHNUc2alJOclVOSlc4ek1KT05YTkhCZ3B1aEIya0c1cU5xTUhLYjJVaEYyc2I1NkN2QVBERGhFbS9WYmhKemtMaGhQTUw1K3N6RldnOGhsdFZna2dhYWorSER1WXozYktGUFJ2VTFiVHE3SlBFZXBKbGlYNXFZUDlobE1icUx4b0l3YVhRaWJMOTludTh4anVNY0RaS3JCeFpQRFZtUHc2bXpMSVJDblNwSndtSWUrc2VsVmRkamJMVFZLdVRFZk9yVkpOYWZUMTRTd2V2a05OZTRVeHRGaGZGekIzNFFNOWJlRkl3WkZkUWlZNGhPZllJdncyQkg2VENHUGVRZk1HaUs2QktjdHdEam5yYnFyV3RuVWFQdW5HVzZMdFkrSmtjeEdNYVFGYlNxVCtFYWRQWlhxdVZCSVplaFdkMWY2eUhIZWJWQzJ4TFhXTzFQTFB4TGtQNEYvcmxSVnJKeTFVRXN4c2orY2Y0Q2xFU0QrM1FmWW1GdjBZMEtWZzI3NkdXdzRyTFdjWng1UlNzVk55Z0FMNTVGd0hjZ0pCaDdDRy90dnB2VWxabVBlV0gybUw0S25LNHE3WGRTL3V3NUFKMGZnZEZ2cC9vS0RHdTlFL3FUMEtpSVowL1FkR1NwVzhDcTRReUMrMVNNRDZzSWFxZld6bHBiTXZLSVdpdkRTUjd5a2w2dFYzZWliSFZCclN0OHdYNldJQ1JlRTdtL25ncnlITTJLVVhvU0Jrd1p5OTA0eHJLTDZ1TzJqbGN1RFhqZWpRemN2blJydTRPdDIvU1VGNVN3SDZQQTVFVXVKTU1lODNaYjZHMldsMUxscWxNTWJnTnV3LzdQeEZPeEpsVW16eU9GV3M3SzNILzRUejNmR0l1QlEvRWNRYWdCN29WUGU3Nk44OGEvOEgzbnlETWRDOVVQZ2RJS01jK1VlSDZLYWM4Qk5EMjY0NXI5SlQvTWVTY1NIczZaZ0piS1RjMzZGOEFyY3U3TEFmck9NUnZneDZHQzdyUHc3ejkyTHlIQ0xTc0dESXgxZDBXY01vUTdVQzVZV2JIN2JDNm5KT2w0bzYzOUdhTTBicDk3Zmc2YW9sam55T3ZLQ08raEpIYnlqNFl6eHpleU1tQm1hYnl0MVdiYjZYdFp1QUwrVS9BNVVzSlRDQlBDdlF3OTVaTVBSTW8rMloyRXR5VXBseGpoUUlpUkhhU1lSWWs3TWVOTmphclNnQ2ZQdnRIRy9kZnNXd0s0enZsY1Y2dktpWlBSd0xmR3h1WWNqUUsrZDRrbk1hSUR4QzJqUy9kUEJJUWJNWjV6MllDQllXRXk1NjM0N2FHMHBQZTRsU0RVZ2pOU0lrNDF2MTVNZHcveTl2NDhHNXl3cStkbmJlbTN6ZG5pekFqVnNhKy9LbmRiWWZ6cGx3cHFwc2lGQVhqV055U282R0VIZzBpVlhIeHpleU0xcDhsTlhHMHcreHNVL2lxaml0SGFGQkQ2N25OVUk4NzJmZ3BRcThBTGlBbDNCcEY3OVU3a1FITWVwODFkTTdweHc5L0xHNnVDaWRLMmNCSEhwUEJ0WXZqckR6c3JjczhDbjRxNHY5ZGRnT1UzWUhtQ3luc1ZqSEJJdXUreUtmeDF1SWVPWW5YS2lLV1JWdWlJck9UOVVVTUJEK3pUZ1p1R0p4eEp1dmJ6Y2FZbVNUb25SZUhWcXNKNW84M284K21NNkcvSVp1Z0ZUSUw5SG5pN3FvNEVvWFNOcC9PWElDd3N4bmVnOUo4VkhxbWdManYvM0U5T0tOTXNPTlFGN1A4TlRsZUxaTHBqMlZuUk1tbFZ2aTRsS0lCM1RFVG15THlJZG1wbkFYNmFBMS9BVmxCOWIwU3NwTmx3WkRXaDk5Uk9EelZmUW9aNUZhRi9CY3FsODJVa3JiekJsR0lHck9nTHZQRTkwbnNuL1NUSmxpdE5rcExpSzdtdzhiTXZBWjhod3BjelpDRjBmRmVaRmMyWldPZyt4T25Ec3I5WjIrZ1hrTnRLeWFDZXVQZ3VSMzhXUnFQWSt3K0ZweUhGcnEzUytGQ0JsYlVSbjQyci9yY0xyMHc2Umt1dnQ3K2xXeW1ZZHVRZ3I5ZEJ4WUE2bURuWEtjNlBvU1dhVW8yYzlCakpRaWViWmliS2JiUS82dHNoYWJqVT0ifQ==";
+const SALT_B64 = "yAj565GhJKO7W+CCQOm7Qg==";
+const HINT    = "";
+
+(async function(){
+  const enc = new TextEncoder();
+  const $ = id => document.getElementById(id);
+  const msg = $("msg");
+  let unlocking = false;
+
+  async function deriveKey(pw){
+    const km = await crypto.subtle.importKey("raw", enc.encode(pw), "PBKDF2", false, ["deriveKey"]);
+    return crypto.subtle.deriveKey(
+      {name:"PBKDF2", salt: Uint8Array.from(atob(SALT_B64), c=>c.charCodeAt(0)), iterations:310000, hash:"SHA-256"},
+      km, {name:"AES-GCM", length:256}, false, ["decrypt"]
+    );
+  }
+  async function tryDecrypt(pw){
+    const payload = JSON.parse(atob(__PAY__));
+    const raw = Uint8Array.from(atob(payload.d), c=>c.charCodeAt(0));
+    const iv  = Uint8Array.from(atob(payload.i), c=>c.charCodeAt(0));
+    const key = await deriveKey(pw);
+    const gz  = await crypto.subtle.decrypt({name:"AES-GCM", iv:iv}, key, raw);
+    if (typeof DecompressionStream === "undefined"){
+      throw new Error("BROWSER_ALT");
+    }
+    const stream = new Blob([gz]).stream().pipeThrough(new DecompressionStream("gzip"));
+    const buf = await new Response(stream).arrayBuffer();
+    return new TextDecoder().decode(buf);
+  }
+  function success(html){
+    document.open(); document.write(html); document.close();
+  }
+  async function unlock(pw, remember){
+    if (unlocking) return; unlocking = true;
+    msg.className = "msg"; msg.textContent = "Wird entschlüsselt …";
+    try{
+      const html = await tryDecrypt(pw);
+      if (remember){ try{ localStorage.setItem("lf-secret", pw); }catch(e){} }
+      success(html);
+    }catch(e){
+      msg.className = "msg err";
+      msg.textContent = (e && e.message === "BROWSER_ALT")
+        ? "Dein Browser ist zu alt – bitte einmal Safari/iPadOS aktualisieren."
+        : "Falsches Passwort – versuch es nochmal 🙂";
+      $("box").classList.remove("shake"); void $("box").offsetWidth; $("box").classList.add("shake");
+      unlocking = false;
+    }
+  }
+
+  $("go").addEventListener("click", ()=> unlock($("pw").value, $("save").checked));
+  $("pw").addEventListener("keydown", ev => { if (ev.key === "Enter") unlock($("pw").value, $("save").checked); });
+
+  /* Automatisches Entsperren, wenn auf diesem Gerät gespeichert */
+  let saved = null; try{ saved = localStorage.getItem("lf-secret"); }catch(e){}
+  if (saved){ unlock(saved, false); setTimeout(()=>{ if (unlocking) { msg.className="msg"; msg.textContent=""; } }, 1500); }
+  if (HINT) { /* platzhalter für optionale Zusatzinfos */ }
+})();
+</script>
+</body>
+</html>

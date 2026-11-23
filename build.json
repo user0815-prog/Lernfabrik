@@ -1,0 +1,26 @@
+{
+  "app": "Lernfabrik",
+  "version": 1,
+  "beschreibung": "Gehostetes, clientseitig verschlüsseltes Lernportal (Klasse 11) auf GitHub Pages",
+  "url": "https://user0815-prog.github.io/Lernfabrik/",
+  "schema": {
+    "kdf": "PBKDF2-SHA256",
+    "iterationen": 310000,
+    "cipher": "AES-256-GCM",
+    "kompression": "gzip (DecompressionStream, ab iOS 16.4)",
+    "salt_hex": "c808f9eb91a124a3bb5be08240e9bb42",
+    "key_storage": "localStorage lf-secret (base64 Passwort), pro Gerät gespeichert nach Eingabe"
+  },
+  "seiten": [
+    { "datei": "index.html", "quelle": "src/landing.html", "klartext_bytes": 4158, "chiffrat_bytes": 8769 },
+    { "datei": "arena.html", "quelle": "src/arena.html", "klartext_bytes": 565720, "chiffrat_bytes": 290393 },
+    { "datei": "dashboard.html", "quelle": "src/dashboard.html", "klartext_bytes": 93118, "chiffrat_bytes": 44057 }
+  ],
+  "update_prozess": [
+    "1. Klartext-HTML nach src/ legen (bzw. CANVAS.md via awk vom Frontmatter befreien).",
+    "2. node encrypt.js src/<name>.html site/<name>.html",
+    "3. node verify.js site/<name>.html src/<name>.html",
+    "4. Alle Dateien per push_files (github_app) auf main pushed; Pages-Workflow deployt automatisch.",
+    "5. Passwort steht NICHT in diesem Repo/Bildern; es ist nur Max bekannt (uebergabe an Schuelerin separater Kanal)."
+  ]
+}
