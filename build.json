@@ -12,9 +12,9 @@
     "key_storage": "localStorage lf-secret (base64 Passwort), pro Gerät gespeichert nach Eingabe"
   },
   "seiten": [
-    { "datei": "index.html", "quelle": "src/landing.html", "klartext_bytes": 4158, "chiffrat_bytes": 8769 },
-    { "datei": "arena.html", "quelle": "src/arena.html", "klartext_bytes": 565720, "chiffrat_bytes": 290393 },
-    { "datei": "dashboard.html", "quelle": "src/dashboard.html", "klartext_bytes": 93118, "chiffrat_bytes": 44057 }
+    { "datei": "index.html", "quelle": "src/landing.html", "klartext_bytes": 4158, "chiffrat_bytes": 8634 },
+    { "datei": "arena.html", "quelle": "src/arena.html", "klartext_bytes": 565720, "chiffrat_bytes": 290693 },
+    { "datei": "dashboard.html", "quelle": "src/dashboard.html", "klartext_bytes": 93118, "chiffrat_bytes": 44047 }
   ],
   "update_prozess": [
     "1. Klartext-HTML nach src/ legen (bzw. CANVAS.md via awk vom Frontmatter befreien).",
