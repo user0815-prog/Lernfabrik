@@ -1,36 +1,40 @@
 # 🏭 Lernfabrik
 
-Gehostetes Lernportal (Nachhilfe Klasse 11) auf **GitHub Pages**:
-https://user0815-prog.github.io/Lernfabrik/
+Verschlüsseltes Lernportal für die Nachhilfe Klasse 11 – gehostet via GitHub Pages.
 
-Diese Seiten enthalten **keine klaren Lerninhalte**. Alle Nutzdaten (Fragen, Noten, Chronik, Namen)
-liegen als AES-256-GCM-Chiffrat im HTML eingebettet und werden erst im Browser nach Passwort-Eingabe
-entschlüsselt:
+🔗 **https://user0815-prog.github.io/Lernfabrik/**
 
-- **PBKDF2-SHA256**, 310.000 Iterationen, fester Salt (siehe `build.json`)
-- **AES-256-GCM** mit zufälliger IV pro Build
-- Inhaltskompression per **gzip** (Browser `DecompressionStream`, ab iOS 16.4 / moderne Browser)
-- Passwort optional pro Gerät gespeichert (`localStorage`), sonst pro Sitzung
-
-## Inhalt
+## Pages dieser Site
 
 | Seite | Inhalt |
-|---|---|
-| `index.html` | Landing Page (Kacheln) – ebenfalls verschlüsselt |
-| `arena.html` | Klausur-Arena: Quiz, Probeklausuren, Themen-Training, Karteikasten, Feedback |
-| `dashboard.html` | Lernfortschritt-Dashboard: Noten-Zeitreihe, Stärken, Baustellen |
+| --- | --- |
+| `index.html` | Landing Page mit drei Kacheln (Arena, Noten, Lernfortschritt) |
+| `arena.html` | Klausur-Arena: Quiz, Karteikarten, offene Fragen, XP/Streak (v2, 22.11.2026) |
+| `noten.html` | Noten-App: Fächer, Noten 0–15, Kategorien, Zeugnis-Hochrechnung (Klasse 11, HJ1/HJ2) |
+| `dashboard.html` | Lernfortschritt: Chronik der bewerteten Arbeiten + mündliche Noten live aus der Noten-App |
 
-## Struktur
+## Verschlüsselung
 
-```
-site/                <- deployed (GitHub Pages, Quelle: GitHub Actions)
-  index.html, arena.html, dashboard.html   (Chiffrat + Entschlüsselungs-UI)
-  .nojekyll
-  .github/workflows/pages.yml               (Deploy-Workflow)
-  build.json           (Salt, Iterationen, Update-Prozess; KEIN Passwort)
-src/                 <- Klartextquellen (nicht deployed)
-```
+Alle Seiten sind **clientseitig verschlüsselt**:
 
-Hinweis: `src/` und die Build-Skripte liegen außerhalb dieses Repos.
+- AES-256-GCM, Schlüssel via PBKDF2-SHA256 (**310 000 Iterationen**) aus Passwort + Salt
+- Salt (hex): `c808f9eb91a124a3bb5be08240e9bb42` wiederverwendet für Konsistenz über alle Releases
+- Nutzdaten: gzip (Level 9) vor der Verschlüsselung; Browser-Pfad: DecompressionStream (ab iOS 16.4, sonst Upgrade-Hinweis)
+- Payload: base64-JSON `{i: IV, d: ciphertext‖tag}` als `__PAY__` in 4000-Zeichen-Chunks
+- Passwort: gilt nur Max persönlich, ist **nicht** in diesem Repo und wird nie dokumentiert
+- „Auf diesem Gerät speichern" → localStorage-Schlüssel `lf-secret` (AUTO-Login beim nächsten Besuch)
 
-<!-- deploy-trigger: Pages aktiviert 23.11.2026 -->
+Das Repo enthält **ausschließlich Chiffrat** – kein Klartext, keine personenbezogenen Daten.
+
+## Update-Prozess (neue Version einer Seite)
+
+1. Klarquelle nach `/src` (nicht committen), Salt in `salt.txt`, Passwort in `pw.txt` (beide lokal, niemals committen).
+2. `node encrypt.js src/<seite>.html site/<seite>.html "<Hinweistext>"`
+3. `node verify.js` – Entschlüsselung muss 1:1 der Quelle entsprechen, keine Klartext-Spuren.
+4. `site/` committen und pushen – GitHub-Actions-Workflow deployt automatisch nach GitHub Pages.
+
+## Gemeinsamer Datenspeicher
+
+Die Noten-App speichert unter localStorage-Schlüssel `lfNotenV1` (Version 1, Klasse 11).
+Das Lernfortschritt-Dashboard liest daraus live alle mündlichen Noten (Zwischen-/Endnoten,
+Teilnoten, Extraleistungen) und die je-Fach-Gewichtung `f.gew` (Prozentanteil schriftlich).

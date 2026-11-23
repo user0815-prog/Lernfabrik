@@ -1,117 +1,158 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="de">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>🔒 Lernfabrik</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>🏭 Lernfabrik</title>
 <style>
-  :root{ --page:#0B0E13; --card:#11151C; --line:#1E2530; --muted:#8B95A6; --teal:#5EEAD4; }
-  *{box-sizing:border-box}
+  :root{
+    --bg:#0B0E13; --card:#141A26; --card2:#1B2333; --line:#26314A;
+    --tx:#E8EDF5; --tx2:#96A2B8; --green:#5EEAD4; --red:#F87171;
+  }
+  *{box-sizing:border-box; margin:0; padding:0}
+  html,body{height:100%}
   body{
-    margin:0; min-height:100vh; background:var(--page); color:#E7ECF3;
-    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",sans-serif;
-    display:flex; align-items:center; justify-content:center; padding:26px 18px;
-    background-image:radial-gradient(1100px 470px at 50% -8%, #16202E 0%, #0B0E13 62%);
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    background:
+      radial-gradient(1100px 560px at 82% -12%, rgba(94,234,212,.10), transparent 60%),
+      radial-gradient(900px 520px at 8% 112%, rgba(167,139,250,.10), transparent 60%),
+      var(--bg);
+    color:var(--tx);
+    display:flex; align-items:center; justify-content:center;
+    min-height:100vh; padding:24px;
   }
   .box{
-    width:100%; max-width:400px; background:var(--card); border:1px solid var(--line);
-    border-radius:20px; padding:30px 26px 24px; text-align:center;
+    width:100%; max-width:400px; text-align:center;
+    background:linear-gradient(180deg,var(--card2),var(--card));
+    border:1px solid var(--line); border-radius:22px; padding:34px 28px 28px;
+    box-shadow:0 24px 60px rgba(0,0,0,.5);
   }
-  .logo{font-size:44px}
-  h1{font-size:23px; margin:10px 0 4px; letter-spacing:.3px}
-  h1 .accent{color:var(--teal)}
-  .sub{color:var(--muted); font-size:14px; margin:0 0 20px; line-height:1.5}
+  .em{font-size:52px; display:block; margin-bottom:14px;
+    filter:drop-shadow(0 6px 16px rgba(94,234,212,.35))}
+  h1{font-size:24px; letter-spacing:-.01em; margin-bottom:8px}
+  h1 .grad{background:linear-gradient(92deg,#5EEAD4,#A78BFA);
+    -webkit-background-clip:text; background-clip:text; color:transparent}
+  .sub{color:var(--tx2); font-size:14px; line-height:1.55; margin-bottom:24px}
   input[type=password]{
-    width:100%; padding:14px 16px; font-size:17px; border-radius:12px; border:1px solid var(--line);
-    background:#0D1117; color:#E7ECF3; outline:none; margin-bottom:12px;
+    width:100%; padding:14px 16px; font-size:16px; color:var(--tx);
+    background:#0E1520; border:1px solid var(--line); border-radius:12px;
+    outline:none; text-align:center; letter-spacing:.06em;
+    transition:border-color .18s ease, box-shadow .18s ease;
   }
-  input[type=password]:focus{border-color:rgba(94,234,212,.55)}
-  .row{display:flex; align-items:center; gap:8px; font-size:13px; color:var(--muted); margin-bottom:16px; text-align:left}
-  .row input{accent-color:#5EEAD4; transform:scale(1.15)}
+  input[type=password]:focus{border-color:var(--green); box-shadow:0 0 0 3px rgba(94,234,212,.16)}
+  .row{display:flex; align-items:center; justify-content:center; gap:8px;
+    margin:14px 0 18px; color:var(--tx2); font-size:13px; user-select:none; -webkit-user-select:none}
+  .row input{width:16px; height:16px; accent-color:#5EEAD4}
   button{
-    width:100%; padding:14px; font-size:16px; font-weight:700; border:0; border-radius:12px;
-    background:linear-gradient(135deg,#2DD4BF,#0E9F8A); color:#06281F; cursor:pointer;
+    width:100%; padding:14px; font-size:15.5px; font-weight:700; color:#06251E;
+    background:linear-gradient(92deg,#5EEAD4,#34D399); border:none; border-radius:12px;
+    cursor:pointer; transition:filter .15s ease, transform .15s ease;
   }
+  button:hover{filter:brightness(1.08)}
   button:active{transform:scale(.985)}
-  .msg{min-height:22px; font-size:13.5px; margin-top:12px; color:var(--muted)}
-  .err{color:#F87171}
-  .ok{color:var(--teal)}
-  @keyframes shake{0%,100%{transform:translateX(0)}20%{transform:translateX(-7px)}40%{transform:translateX(7px)}60%{transform:translateX(-5px)}80%{transform:translateX(5px)}}
-  .shake{animation:shake .38s}
-  footer{margin-top:16px; font-size:11.5px; color:#4A5462}
+  button:disabled{opacity:.55; cursor:wait}
+  .hint{margin-top:16px; color:var(--tx2); font-size:12px; line-height:1.55}
+  .err{margin-top:14px; display:none; color:var(--red); font-size:13.5px; font-weight:600}
+  .spin{display:inline-block; width:15px; height:15px; margin-right:2px; vertical-align:-3px;
+    border:2.5px solid rgba(6,37,30,.25); border-top-color:#06251E; border-radius:50%;
+    animation:rot .8s linear infinite}
+  @keyframes rot{to{transform:rotate(360deg)}}
+  .shake{animation:shake .45s ease}
+  @keyframes shake{
+    0%,100%{transform:translateX(0)}
+    20%{transform:translateX(-11px)} 40%{transform:translateX(9px)}
+    60%{transform:translateX(-7px)} 80%{transform:translateX(5px)}
+  }
+  @media (prefers-color-scheme:light){ :root{--bg:#F3F5F9} body{background:var(--bg)} }
 </style>
 </head>
 <body>
-  <div class="box" id="box">
-    <div class="logo">🏭</div>
-    <h1>Lern<span class="accent">fabrik</span></h1>
-    <p class="sub">Willkommen! Dieser Bereich ist verschlüsselt.<br>Gib bitte das Passwort ein.</p>
-    <input type="password" id="pw" placeholder="Passwort" autocomplete="current-password" autocapitalize="off" autocorrect="off" spellcheck="false">
-    <label class="row"><input type="checkbox" id="save" checked> Auf diesem Gerät speichern</label>
-    <button id="go">Entschlüsseln 🔓</button>
-    <div class="msg" id="msg"></div>
-    <footer>Geschützt per AES-256 · läuft komplett auf deinem Gerät</footer>
-  </div>
+<div class="box" id="box">
+  <span class="em">🏭</span>
+  <h1>Lern<span class="grad">fabrik</span> öffnen</h1>
+  <p class="sub" id="hint">Willkommen in der verschlossenen Lernfabrik.&lt;br>Gib das Passwort ein, das du von deiner Nachhilfelehrkraft hast.</p>
+  <input type="password" id="pw" placeholder="Passwort" autocomplete="current-password" autocapitalize="off" spellcheck="false">
+  <label class="row" for="save"><input type="checkbox" id="save"> Auf diesem Gerät speichern</label>
+  <button id="go"> 🔓 Entschlüsseln</button>
+  <p class="err" id="err"></p>
+  <p class="hint">🔒 AES-256-GCM · entschlüsselt ausschließlich auf deinem Gerät.<br>
+    Nichts wird an einen Server geschickt.</p>
+</div>
 <script>
 "use strict";
-const __PAY__ = "eyJpIjoiemc4RWc1WVRvZ0E4ZDJJcyIsImQiOiJiK3FsY2RhN1QvRmQySzBCckY0YWVnUm5ueWUyMGF0OHl6eEovaGo5eElia015TmViaWZnODQ5aEpXYnB3N05sdzZtSWF6dmRYem9YRHBpeFhKQXlXbDljTnMrWXdsMXYwYWRDdnpFSnpNYndBRTUzTVFQL0RLUFp5MGhBYzZMZkNkaW8vN0h5QklpaVNERjMrdHRpM2N4ZWtuK3cwSitXdThBcE1ZbVlac3RwNHE3M0lLY3cvMVpOa1VGUitqTGxSY1lCdWZsT0xiOHNQSWRhSEV6NjZSOUwxMURxbU16U1hjOEExa0xIaVFORHp3RkN5ZU9aSlBEayt4bDl1c0htaDFSd29oS3VDNlBGd2xtMWN4ekt0Sk5XU21xb3VMV2JkRmxNZU1FL1RjQkpsSlNlSnZsVHdhc2J3azhnRnpJSlp4TGdOMWtMaWV0WG01eG5BWnZyTnlqcVZyT0VnOUJ4d0RwcmJ4allyRFp0S3JJeDMxRDRmdTUwSnhEcEdMUW5uZDlvei80ZG5qK3JOeURQVUt5cG44T0pmRXdNVVdVcjdEK1BIcDFXOU9XMzU4RFErZEZqU2dGODJaQnhPYkNYZmIyTTI0UldhVzJFT0J5UDZWSTFrWitDeFowZGJNcGpIdHJwaG1HQ016eXZZN0szNlRORjFWQ29ITDhHUmZaK2Y3ajhVeG14YUVVRUd0ZVVLczBwbkV4bjhzc2JyT1VDYnZMMWpiZTFuVDYwUUw0L3VXWU5USGhwTXBvSWs4MlVVSnVoajlGWUpWVlQvbVZFbFEzV3VEUHlRK1hSU0FydTdYT2dyMXBIeG9VNTllWklJRUx0N2s1QitseklVL1Q4cTF0eU4xUWp6QVhmS2tyQWtyQllhQjhpaUFWbC9WcVdmSU5adDBwbjVFUG5Hd2d6MEhuK21TUFV5ZFQra0hjOFBxTHJnNVNRWTFVREc4MWVYeHQ5REJ0MVFNQVpubnBCNE1Pd3ZOMjhsa213b2dzVnlSNXljRDFtbFJpamJ6eVZzOUs2elh5RlJMRVQ4UUdlY0xJZXkyL2I5Wk9sd1RaclM4N0s5WDgxQXNtdVNZek15U1ROQmMvT2xxejFFZ0tvN3MweHJEeGsxb3c5YklESHV5UmZLK21xcW9xWWNleFN5VzE2S1dLOWZ6RUJsZEludWV1VEROSFUrRGpHR0dsQ3RJR2pTMlZNRWVFdTJiRTBJWWhHL0Z4d2grRVc1V2RxdEdQdzZoc3pJaVZ0R0RjWXJETmU5U2pmcldQN3RKZ3M4UTMySC9VVjRXK0ZFSHhRU3JpNHlHN0dmaDlWakJneGZYZUlBQmdBQ0tzOWdjcUFIejgvM20zbkFJYmUrbVpJOHF5RFBwQWxXUjI1aENKSHhkWEp6UmNRVTZ0ZVBHdFZJQVdPaWlCaTB3ZkpKS0pWaldVdzJHVVpkaExaUWlFVzB6c2J4WE9HdnNWYjdzTVlYdjJlNlY1dFZVaWh4Rm0wdXJTQUxxU0luM1k1N2pjNCtOZEZCR293TVc3RHJYaWZ6OW9vMUptL3ZIWDdJVG5nL2hSRFlpZk9ObmYyOXNyS25ud21PdmdHK2QzZlVYRTkvTk01ZmVkSXFJY05jTWM3WVZhTHQ5WGRlRlhrMkdQL1pLTkRKTURzMmUwWE9JZkF6OXAzUkErQ2JjRWxLS1NRMTQ4UVZrbkl3ZUlLcmNMeVFFcm1kMVd6OXVmQSsrUjZKYllHUHVoYUcvMC81Nk1qdGtWSzZhSXZTMlFvRkJMWnBGN0ZkaXJMUFZxUkJWdGE0ZXJqalNaRDNJVXh4Rndja1NXQzVsRzRKeXZuTEZiNUc1MUVhdlJGaWNoTHB5SzIvdE54dVI2MTRDV091Y3ZwZTZHL3hnUTEwdXBBQnhLcjROUkx0SlY3aHFpNXF0RjNUN0w5dVlsWnBiWnVDcEI2WkptOGtZeXNOZDl4R0NuVXpyT0JVMGVMVDlCekJaRWg0V0N1Z2ovL1NUNkx4QnRYaWRFNThESU1RbDhwNVBwYzNYYmtBODkxaUFDbWs5bEdYWWtrWDJhODFIbnJXNFJzU0xDSXZyM01JV1N0SEo3UFNXTlQ1Qi9XVDczNDRhVHV2SFEwUVFnTDRDRmVsY2FnOWpRVnI1WHBkVFlkOG9zcXVab2h0dmhaNFI5VU0wajZQcFJ3VGthZm5BeS9jNXA5V0FyYi83cktxcjdMNnMvM1lHUHJvanlORGJQdjdpTENjK3NvQzY1ZVNDb1VNMTlFM2J0Q0pwTllTaWRiTTZqdXBVRTJlY051cFV5eFVGQkdaOUY4a0FoNFgyRnRYUHRwVGo3NTNBaFd6Tjl0QzJEYWZEL2JIaEZIWW5SUktqeTFaUmFLVC9URUxpM09oZ0U5R2E5aklJRG1BSkFZMXl6Z1MrQ203TGMwRTFwSHBLUDhmWEJ0Y0NOV1d5NEtpcDRwcnB4YVdyWWVJWkxYVUVVenI5NW1EOWFJRjFpRkl4Vzl2YnlLTlRIdkNlRjJ2eDBSSk1JcHBGYkJyaVB4NkdEaldzc0dLeEZOSzZVc2YwK1BTdFFOblBueGRjUGZpZUxzSVBPR3dOQTBlWjR4M0prb0xlSGo5allhMENjbWd1a2gyemhnOGpBNDV1c2IzU2RINDZhWGdmTTRvVzRab3hMdU14aUFLSEJiaG9SdHE2YzVLOC81bERtdnNMVFIvWk5ucWo1WGFrVFNhSUxJczl1N0tYNFFJZC95Mi9VZ1hmeURmZ292dkhJbTA1S01nQkdwci9paFNTbUEzeGMrYXpFMWZCY1dubE5uWHhtR2pNSlVvblFCTDNuanhuUDN5cUYxRWMxbjFxbTY0MXVhTkFnWFNYbGQ3LytxczdaWHNTKzhlbis0ZjFWV0FHK2xSWGtNMmtvNUNEa3p0WEQ2WDBZMURDaEh3Y1hEWHZxMzBDR0c2blFnMlY4aktpb3RxUVUrV0h3NXA0c1pMeDVBd2lGbkpPaVdsbnFZQTFoRFpSd1F0d0xBT2k3Z3NqYzF5WnBmdlBlbHlVa1JUOHc1WFdaSlVJQXpCbjBSYjZmTWkzcFdwVU5oUlRWaUF3NW9xazNYU09Pek05aDRKVnVWSlBRWllBL2txUVdiUWJYcUU1TlVTZGJNdWRrOTJwNHRCL3B4RmhsMEw3VjVsRCtLZmtaUXVPT0RUMzV0bkdINFpmMHF4Q21OeW1HOE1mKzAyL3ZONVdSeTlMMW5HQU5JTi95UmVGOCthNUtLY2J4ZlJ6OD0ifQ==";
+/* ================= Lernfabrik-Prompt (clientseitige Entschluesselung) =================
+   Schema: PBKDF2-SHA256 (310 000 Iterationen) -> AES-256-GCM; Nutzdaten gzip-komprimiert.
+   Payload: base64-JSON {i: IV (base64), d: ciphertext||tag (base64)}. */
+const __PAY__ = "{\"i\":\"ojyEFhLj99oj7Mhv\",\"d\":\"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\"}";
 const SALT_B64 = "yAj565GhJKO7W+CCQOm7Qg==";
-const HINT    = "";
 
-(async function(){
+const elBox = document.getElementById("box");
+const elPw  = document.getElementById("pw");
+const elGo  = document.getElementById("go");
+const elErr = document.getElementById("err");
+const elSave= document.getElementById("save");
+const elHint= document.getElementById("hint");
+
+function zeig(sw){ /* Fehlermeldung + Box-Wackeln */
+  elErr.textContent = sw === "BROWSER_ALT"
+    ? "Dein Browser kann komprimierte Seiten leider nicht entschlüsseln (DecompressionStream fehlt, iOS < 16.4). Bitte Safari/Chrome aktualisieren."
+    : "Passwort falsch – probiere es noch einmal.";
+  elErr.style.display = "block";
+  elBox.classList.remove("shake");
+  void elBox.offsetWidth;
+  elBox.classList.add("shake");
+}
+
+function b64ToArray(b64){
+  const bin = atob(b64), u8 = new Uint8Array(bin.length);
+  for(let i=0;i<bin.length;i++) u8[i] = bin.charCodeAt(i);
+  return u8;
+}
+
+async function tryKey(pw){
   const enc = new TextEncoder();
-  const $ = id => document.getElementById(id);
-  const msg = $("msg");
-  let unlocking = false;
+  const km  = await crypto.subtle.importKey("raw", enc.encode(pw), "PBKDF2", false, ["deriveKey","deriveBits"]);
+  const key = await crypto.subtle.deriveKey(
+    { name:"PBKDF2", salt:b64ToArray(SALT_B64), iterations:310000, hash:"SHA-256" },
+    km, { name:"AES-GCM", length:256 }, false, ["decrypt"]);
+  const P = JSON.parse(__PAY__);
+  const iv = b64ToArray(P.i), data = b64ToArray(P.d);
+  const pt = await crypto.subtle.decrypt({ name:"AES-GCM", iv:iv }, key, data);
+  /* gunzip */
+  if(typeof DecompressionStream === "undefined") throw "BROWSER_ALT";
+  const ds = new DecompressionStream("gzip");
+  const stream = new Blob([pt]).stream().pipeThrough(ds);
+  const buf = await new Response(stream).arrayBuffer();
+  return new TextDecoder().decode(buf);
+}
 
-  async function deriveKey(pw){
-    const km = await crypto.subtle.importKey("raw", enc.encode(pw), "PBKDF2", false, ["deriveKey"]);
-    return crypto.subtle.deriveKey(
-      {name:"PBKDF2", salt: Uint8Array.from(atob(SALT_B64), c=>c.charCodeAt(0)), iterations:310000, hash:"SHA-256"},
-      km, {name:"AES-GCM", length:256}, false, ["decrypt"]
-    );
+async function open(pw){
+  elErr.style.display = "none";
+  elGo.disabled = true;
+  elGo.innerHTML = '<span class="spin"></span> Wird entschlüsselt&hellip;';
+  try{
+    const html = await tryKey(pw);
+    try{ if(elSave.checked) localStorage.setItem("lf-secret", pw); }catch(e){}
+    const doc = document.open("text/html", "replace");
+    doc.write(html);
+    doc.close();
+    return true;
+  }catch(e){
+    zeig(e === "BROWSER_ALT" ? "BROWSER_ALT" : e);
+    elGo.disabled = false;
+    elGo.innerHTML = " 🔓 Entschlüsseln";
+    return false;
   }
-  async function tryDecrypt(pw){
-    const payload = JSON.parse(atob(__PAY__));
-    const raw = Uint8Array.from(atob(payload.d), c=>c.charCodeAt(0));
-    const iv  = Uint8Array.from(atob(payload.i), c=>c.charCodeAt(0));
-    const key = await deriveKey(pw);
-    const gz  = await crypto.subtle.decrypt({name:"AES-GCM", iv:iv}, key, raw);
-    if (typeof DecompressionStream === "undefined"){
-      throw new Error("BROWSER_ALT");
-    }
-    const stream = new Blob([gz]).stream().pipeThrough(new DecompressionStream("gzip"));
-    const buf = await new Response(stream).arrayBuffer();
-    return new TextDecoder().decode(buf);
-  }
-  function success(html){
-    document.open(); document.write(html); document.close();
-  }
-  async function unlock(pw, remember){
-    if (unlocking) return; unlocking = true;
-    msg.className = "msg"; msg.textContent = "Wird entschlüsselt …";
-    try{
-      const html = await tryDecrypt(pw);
-      if (remember){ try{ localStorage.setItem("lf-secret", pw); }catch(e){} }
-      success(html);
-    }catch(e){
-      msg.className = "msg err";
-      msg.textContent = (e && e.message === "BROWSER_ALT")
-        ? "Dein Browser ist zu alt – bitte einmal Safari/iPadOS aktualisieren."
-        : "Falsches Passwort – versuch es nochmal 🙂";
-      $("box").classList.remove("shake"); void $("box").offsetWidth; $("box").classList.add("shake");
-      unlocking = false;
-    }
-  }
+}
 
-  $("go").addEventListener("click", ()=> unlock($("pw").value, $("save").checked));
-  $("pw").addEventListener("keydown", ev => { if (ev.key === "Enter") unlock($("pw").value, $("save").checked); });
+elGo.addEventListener("click", ()=> open(elPw.value));
+elPw.addEventListener("keydown", ev => { if(ev.key === "Enter") open(elPw.value); });
 
-  /* Automatisches Entsperren, wenn auf diesem Gerät gespeichert */
-  let saved = null; try{ saved = localStorage.getItem("lf-secret"); }catch(e){}
-  if (saved){ unlock(saved, false); setTimeout(()=>{ if (unlocking) { msg.className="msg"; msg.textContent=""; } }, 1500); }
-  if (HINT) { /* platzhalter für optionale Zusatzinfos */ }
-})();
+/* AUTO-Login: gespeichertes Passwort automatisch verwenden */
+try{
+  const saved = localStorage.getItem("lf-secret");
+  if(saved){ elPw.value = saved; elSave.checked = true; open(saved); }
+}catch(e){}
 </script>
 </body>
 </html>
