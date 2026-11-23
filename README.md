@@ -32,3 +32,5 @@ src/                 <- Klartextquellen (nicht deployed)
 ```
 
 Hinweis: `src/` und die Build-Skripte liegen außerhalb dieses Repos.
+
+<!-- deploy-trigger: Pages aktiviert 23.11.2026 -->
