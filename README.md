@@ -26,12 +26,27 @@ Alle Seiten sind **clientseitig verschlüsselt**:
 
 Das Repo enthält **ausschließlich Chiffrat** – kein Klartext, keine personenbezogenen Daten.
 
+## Build-Kette im Repo (reset-sicher)
+
+Seit dem 27.11.2026 liegt die komplette Build-Kette in diesem Repo und übersteht damit Sandbox-Resets:
+
+- `encrypt.js` – verschlüsselt eine Klarquelle in den Passwort-Wrapper
+- `verify.js` – verifiziert alle in `build.json` gelisteten Seiten (Aufruf ohne Argumente)
+- `prompt_template.html` – der Passwort-Wrapper mit den Markern `@@PAYLOAD@@` (wird mit Anführungszeichen ersetzt), `@@SALT@@` und `@@HINT@@`
+
+Nur die Geheimnisse bleiben lokal (beide niemals committen):
+
+- `salt.txt` – 32 Hex-Zeichen; Fallback: `build.json → schema.salt_hex`
+- `pw.txt` – Passwort (eine Zeile); alternativ Umgebungsvariable `LF_PASS` oder interaktive Abfrage
+
+Ein `.gitignore` schützt `src/`, `salt.txt` und `pw.txt` vor versehentlichen Commits.
+
 ## Update-Prozess (neue Version einer Seite)
 
 1. Klarquelle nach `/src` (nicht committen), Salt in `salt.txt`, Passwort in `pw.txt` (beide lokal, niemals committen).
-2. `node encrypt.js src/<seite>.html site/<seite>.html "<Hinweistext>"`
-3. `node verify.js` – Entschlüsselung muss 1:1 der Quelle entsprechen, keine Klartext-Spuren.
-4. `site/` committen und pushen – GitHub-Actions-Workflow deployt automatisch nach GitHub Pages.
+2. `node encrypt.js src/<seite>.html <seite>.html "<Hinweistext>"` – erzeugt die verschlüsselte Seite im Repo-Wurzelverzeichnis; der Hinweistext erscheint auf der Passwortseite (nur Plaintext, wird HTML-escaped).
+3. `node verify.js` – Entschlüsselung muss 1:1 der Quelle entsprechen; zusätzlich Salt-, Klartext-Spuren-, Syntax- und Zeilenlängen-Checks (Exit-Code 1 bei Problemen).
+4. Die verschlüsselte Seite committen und pushen – der GitHub-Actions-Workflow deployt automatisch nach GitHub Pages.
 
 ## Gemeinsamer Datenspeicher
 

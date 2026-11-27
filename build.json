@@ -11,10 +11,26 @@
     "payload": "base64-JSON {i: iv, d: ciphertext||tag}, __PAY__ in 4000-Zeichen-Chunks"
   },
   "seiten": [
-    { "datei": "index.html",    "quelle": "src/landing.html",   "beschreibung": "Landing Page, 3 Kacheln" },
-    { "datei": "arena.html",    "quelle": "src/arena.html",     "beschreibung": "Klausur-Arena v2 (124 Quiz, 408 Karten, 20 offene Fragen)" },
-    { "datei": "noten.html",    "quelle": "src/noten.html",     "beschreibung": "Noten-App Klasse 11 (HJ1/HJ2, Zeugnis-Hochrechnung, Epochalfaecher)" },
-    { "datei": "dashboard.html","quelle": "src/dashboard.html", "beschreibung": "Lernfortschritt-Dashboard + muendliche Noten aus lfNotenV1" }
+    {
+      "datei": "index.html",
+      "quelle": "src/landing.html",
+      "beschreibung": "Landing Page, 3 Kacheln"
+    },
+    {
+      "datei": "arena.html",
+      "quelle": "src/arena.html",
+      "beschreibung": "Klausur-Arena v2 (124 Quiz, 408 Karten, 20 offene Fragen)"
+    },
+    {
+      "datei": "noten.html",
+      "quelle": "src/noten.html",
+      "beschreibung": "Noten-App Klasse 11 (HJ1/HJ2, Zeugnis-Hochrechnung, Epochalfaecher)"
+    },
+    {
+      "datei": "dashboard.html",
+      "quelle": "src/dashboard.html",
+      "beschreibung": "Lernfortschritt-Dashboard + muendliche Noten aus lfNotenV1"
+    }
   ],
   "shared_state": {
     "localStorage_key": "lfNotenV1",
@@ -22,7 +38,8 @@
     "klasse": 11,
     "hinweis": "Noten-App schreibt, Dashboard liest (muendliche Noten + Gewichtung je Fach)"
   },
-  "update_prozess": "node encrypt.js src/<x>.html site/<x>.html \"<Hinweis>\" && node verify.js && git push (Auto-Deploy via Actions)",
+  "update_prozess": "node encrypt.js src/<x>.html <x>.html \"<Hinweis>\" && node verify.js && git push (Auto-Deploy via Actions)",
+  "buildkette": "encrypt.js, verify.js und prompt_template.html seit 27.11.2026 im Repo (reset-sicher); salt.txt/pw.txt bleiben lokal, werden nie committet",
   "passwort_hinweis": "Passwort nur Max persoenlich bekannt – niemals in diesem Repo oder in Doku speichern",
-  "stand": "2026-11-23"
+  "stand": "2026-11-27"
 }

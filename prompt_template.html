@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>🏭 Lernfabrik</title>
+<style>
+  :root{
+    --bg:#0B0E13; --card:#141A26; --card2:#1B2333; --line:#26314A;
+    --tx:#E8EDF5; --tx2:#96A2B8; --green:#5EEAD4; --red:#F87171;
+  }
+  *{box-sizing:border-box; margin:0; padding:0}
+  html,body{height:100%}
+  body{
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    background:
+      radial-gradient(1100px 560px at 82% -12%, rgba(94,234,212,.10), transparent 60%),
+      radial-gradient(900px 520px at 8% 112%, rgba(167,139,250,.10), transparent 60%),
+      var(--bg);
+    color:var(--tx);
+    display:flex; align-items:center; justify-content:center;
+    min-height:100vh; padding:24px;
+  }
+  .box{
+    width:100%; max-width:400px; text-align:center;
+    background:linear-gradient(180deg,var(--card2),var(--card));
+    border:1px solid var(--line); border-radius:22px; padding:34px 28px 28px;
+    box-shadow:0 24px 60px rgba(0,0,0,.5);
+  }
+  .em{font-size:52px; display:block; margin-bottom:14px;
+    filter:drop-shadow(0 6px 16px rgba(94,234,212,.35))}
+  h1{font-size:24px; letter-spacing:-.01em; margin-bottom:8px}
+  h1 .grad{background:linear-gradient(92deg,#5EEAD4,#A78BFA);
+    -webkit-background-clip:text; background-clip:text; color:transparent}
+  .sub{color:var(--tx2); font-size:14px; line-height:1.55; margin-bottom:24px}
+  input[type=password]{
+    width:100%; padding:14px 16px; font-size:16px; color:var(--tx);
+    background:#0E1520; border:1px solid var(--line); border-radius:12px;
+    outline:none; text-align:center; letter-spacing:.06em;
+    transition:border-color .18s ease, box-shadow .18s ease;
+  }
+  input[type=password]:focus{border-color:var(--green); box-shadow:0 0 0 3px rgba(94,234,212,.16)}
+  .row{display:flex; align-items:center; justify-content:center; gap:8px;
+    margin:14px 0 18px; color:var(--tx2); font-size:13px; user-select:none; -webkit-user-select:none}
+  .row input{width:16px; height:16px; accent-color:#5EEAD4}
+  button{
+    width:100%; padding:14px; font-size:15.5px; font-weight:700; color:#06251E;
+    background:linear-gradient(92deg,#5EEAD4,#34D399); border:none; border-radius:12px;
+    cursor:pointer; transition:filter .15s ease, transform .15s ease;
+  }
+  button:hover{filter:brightness(1.08)}
+  button:active{transform:scale(.985)}
+  button:disabled{opacity:.55; cursor:wait}
+  .hint{margin-top:16px; color:var(--tx2); font-size:12px; line-height:1.55}
+  .err{margin-top:14px; display:none; color:var(--red); font-size:13.5px; font-weight:600}
+  .spin{display:inline-block; width:15px; height:15px; margin-right:2px; vertical-align:-3px;
+    border:2.5px solid rgba(6,37,30,.25); border-top-color:#06251E; border-radius:50%;
+    animation:rot .8s linear infinite}
+  @keyframes rot{to{transform:rotate(360deg)}}
+  .shake{animation:shake .45s ease}
+  @keyframes shake{
+    0%,100%{transform:translateX(0)}
+    20%{transform:translateX(-11px)} 40%{transform:translateX(9px)}
+    60%{transform:translateX(-7px)} 80%{transform:translateX(5px)}
+  }
+  @media (prefers-color-scheme:light){ :root{--bg:#F3F5F9} body{background:var(--bg)} }
+</style>
+</head>
+<body>
+<div class="box" id="box">
+  <span class="em">🏭</span>
+  <h1>Lern<span class="grad">fabrik</span> öffnen</h1>
+  <p class="sub" id="hint">@@HINT@@&lt;br>Gib das Passwort ein, das du von deiner Nachhilfelehrkraft hast.</p>
+  <input type="password" id="pw" placeholder="Passwort" autocomplete="current-password" autocapitalize="off" spellcheck="false">
+  <label class="row" for="save"><input type="checkbox" id="save"> Auf diesem Gerät speichern</label>
+  <button id="go"> 🔓 Entschlüsseln</button>
+  <p class="err" id="err"></p>
+  <p class="hint">🔒 AES-256-GCM · entschlüsselt ausschließlich auf deinem Gerät.<br>
+    Nichts wird an einen Server geschickt.</p>
+</div>
+<script>
+"use strict";
+/* ================= Lernfabrik-Prompt (clientseitige Entschluesselung) =================
+   Schema: PBKDF2-SHA256 (310 000 Iterationen) -> AES-256-GCM; Nutzdaten gzip-komprimiert.
+   Payload: base64-JSON {i: IV (base64), d: ciphertext||tag (base64)}. */
+const __PAY__ = "@@PAYLOAD@@";
+const SALT_B64 = "@@SALT@@";
+
+const elBox = document.getElementById("box");
+const elPw  = document.getElementById("pw");
+const elGo  = document.getElementById("go");
+const elErr = document.getElementById("err");
+const elSave= document.getElementById("save");
+const elHint= document.getElementById("hint");
+
+function zeig(sw){ /* Fehlermeldung + Box-Wackeln */
+  elErr.textContent = sw === "BROWSER_ALT"
+    ? "Dein Browser kann komprimierte Seiten leider nicht entschlüsseln (DecompressionStream fehlt, iOS < 16.4). Bitte Safari/Chrome aktualisieren."
+    : "Passwort falsch – probiere es noch einmal.";
+  elErr.style.display = "block";
+  elBox.classList.remove("shake");
+  void elBox.offsetWidth;
+  elBox.classList.add("shake");
+}
+
+function b64ToArray(b64){
+  const bin = atob(b64), u8 = new Uint8Array(bin.length);
+  for(let i=0;i<bin.length;i++) u8[i] = bin.charCodeAt(i);
+  return u8;
+}
+
+async function tryKey(pw){
+  const enc = new TextEncoder();
+  const km  = await crypto.subtle.importKey("raw", enc.encode(pw), "PBKDF2", false, ["deriveKey","deriveBits"]);
+  const key = await crypto.subtle.deriveKey(
+    { name:"PBKDF2", salt:b64ToArray(SALT_B64), iterations:310000, hash:"SHA-256" },
+    km, { name:"AES-GCM", length:256 }, false, ["decrypt"]);
+  const P = JSON.parse(__PAY__);
+  const iv = b64ToArray(P.i), data = b64ToArray(P.d);
+  const pt = await crypto.subtle.decrypt({ name:"AES-GCM", iv:iv }, key, data);
+  /* gunzip */
+  if(typeof DecompressionStream === "undefined") throw "BROWSER_ALT";
+  const ds = new DecompressionStream("gzip");
+  const stream = new Blob([pt]).stream().pipeThrough(ds);
+  const buf = await new Response(stream).arrayBuffer();
+  return new TextDecoder().decode(buf);
+}
+
+async function open(pw){
+  elErr.style.display = "none";
+  elGo.disabled = true;
+  elGo.innerHTML = '<span class="spin"></span> Wird entschlüsselt&hellip;';
+  try{
+    const html = await tryKey(pw);
+    try{ if(elSave.checked) localStorage.setItem("lf-secret", pw); }catch(e){}
+    const doc = document.open("text/html", "replace");
+    doc.write(html);
+    doc.close();
+    return true;
+  }catch(e){
+    zeig(e === "BROWSER_ALT" ? "BROWSER_ALT" : e);
+    elGo.disabled = false;
+    elGo.innerHTML = " 🔓 Entschlüsseln";
+    return false;
+  }
+}
+
+elGo.addEventListener("click", ()=> open(elPw.value));
+elPw.addEventListener("keydown", ev => { if(ev.key === "Enter") open(elPw.value); });
+
+/* AUTO-Login: gespeichertes Passwort automatisch verwenden */
+try{
+  const saved = localStorage.getItem("lf-secret");
+  if(saved){ elPw.value = saved; elSave.checked = true; open(saved); }
+}catch(e){}
+</script>
+</body>
+</html>
